@@ -1,0 +1,85 @@
+6.2.3 Pertanyaan Sequential Search
+1. Perbedaan tampilDataSearch dan tampilPoisisi
+MethodFungsitampilPoisisi(double x, int pos)Hanya menampilkan informasi posisi/indeks di mana data ditemukan. Contoh output: "data mahasiswa dengan IPK :3.5 ditemukan pada indeks 3"tampilDataSearch(double x, int pos)Menampilkan detail lengkap data mahasiswa (nim, nama, kelas, ipk) yang ditemukan pada posisi tersebut
+Singkatnya: tampilPoisisi hanya memberitahu di mana data berada, sedangkan tampilDataSearch menampilkan isi/konten data tersebut.
+
+2. Fungsi break pada kode program
+javaif (listMhs[j].ipk == cari) {
+    posisi = j;
+    break;
+}
+Fungsi break adalah untuk menghentikan perulangan (loop) secara paksa segera setelah data yang dicari ditemukan pertama kali. Tanpa break, loop akan terus berjalan hingga elemen terakhir meskipun data sudah ditemukan, yang menyebabkan pemborosan waktu komputasi.
+
+3. Fungsi variabel pos / indeks hasil pencarian
+Variabel pos berfungsi sebagai penunjuk lokasi (indeks array) tempat data yang dicari berada. Nilai pos digunakan untuk:
+
+Mengakses elemen listMhs[pos] agar bisa menampilkan detail data mahasiswa.
+Sebagai indikator pencarian: jika pos == -1 berarti data tidak ditemukan, jika pos >= 0 berarti data ditemukan pada indeks tersebut.
+
+
+4. Jika terdapat lebih dari satu data dengan nilai IPK sama
+Program akan menampilkan data pertama yang ditemukan (indeks terkecil), karena terdapat perintah break yang menghentikan loop begitu data cocok pertama kali ditemukan. Data mahasiswa lain yang memiliki IPK sama akan diabaikan.
+
+5. Yang terjadi jika break dihapus
+Jika break dihapus, loop akan terus berjalan sampai akhir array meskipun data sudah ditemukan di tengah. Akibatnya:
+
+Jika ada beberapa data dengan IPK yang sama, variabel posisi akan terus diperbarui dan akhirnya menyimpan indeks terakhir yang cocok (bukan pertama).
+Waktu eksekusi menjadi tidak efisien karena selalu memeriksa semua elemen.
+
+
+6.3.3 Pertanyaan Binary Search
+1. Proses Divide pada kode program
+javamid = (left + right) / 2;
+Baris inilah yang melakukan proses divide (membagi), yaitu menentukan titik tengah (mid) dari rentang array yang sedang diperiksa, sehingga array dibagi menjadi dua bagian.
+
+2. Proses Conquer pada kode program
+javaif (cari == listMhs[mid].ipk) {
+    return mid;
+} else if (listMhs[mid].ipk > cari) {
+    return findBinarySearch(cari, left, mid - 1);
+} else {
+    return findBinarySearch(cari, mid + 1, right);
+}
+Proses conquer terjadi pada tiga kondisi di atas:
+
+Jika nilai tengah cocok → kembalikan indeks (masalah terselesaikan).
+Jika tidak cocok → panggil rekursif ke setengah kiri atau kanan (selesaikan sub-masalah).
+
+
+3. Fungsi left, right, dan mid
+VariabelFungsileftBatas indeks paling kiri dari rentang array yang sedang dicarirightBatas indeks paling kanan dari rentang array yang sedang dicarimidIndeks tengah yang dihitung dari (left + right) / 2, digunakan sebagai titik pembanding
+
+4. Jika data IPK tidak dimasukkan secara urut
+Program tidak dapat berjalan dengan benar. Binary search mengasumsikan data sudah terurut secara ascending. Jika data tidak terurut, algoritma akan salah memotong rentang pencarian (ke kiri atau kanan) sehingga bisa menghasilkan hasil yang salah atau mengembalikan -1 (tidak ditemukan) padahal data sebenarnya ada.
+
+5. Jika IPK dimasukkan dari terbesar ke terkecil (descending)
+Contoh data: 3.8, 3.7, 3.5, 3.4, 3.2 — dicari: 3.2
+Hasil binary search ascending tidak akan sesuai karena mid akan membandingkan dan mengarahkan ke kanan untuk nilai yang lebih kecil, padahal nilai lebih kecil justru ada di kanan (sesuai urutan descending), sehingga hasilnya bisa salah atau -1.
+Solusi – modifikasi menjadi Binary Search Descending:
+javapublic int findBinarySearchDesc(double cari, int left, int right) {
+    int mid;
+    if (right >= left) {
+        mid = (left + right) / 2;
+        if (cari == listMhs[mid].ipk) {
+            return mid;
+        } else if (listMhs[mid].ipk < cari) {
+            // Nilai lebih besar ada di sebelah kiri (karena descending)
+            return findBinarySearchDesc(cari, left, mid - 1);
+        } else {
+            return findBinarySearchDesc(cari, mid + 1, right);
+        }
+    }
+    return -1;
+}
+Perubahan kunci: kondisi listMhs[mid].ipk < cari digunakan untuk mencari ke kiri (kebalikan dari ascending).
+
+6. Bagaimana Binary Search menentukan data tidak ditemukan
+Binary search menentukan data tidak ditemukan ketika kondisi right >= left tidak terpenuhi lagi (yaitu right < left). Ini artinya rentang pencarian sudah menyempit hingga tidak ada elemen tersisa untuk diperiksa. Pada kondisi tersebut, fungsi mengembalikan nilai -1 sebagai tanda bahwa data tidak ada dalam array.
+
+7. Modifikasi jumlah mahasiswa dari keyboard
+Sudah diimplementasikan di MahasiswaDemo.java:
+javaSystem.out.print("Masukkan jumlah mahasiswa: ");
+int jumMhs = sc.nextInt();
+sc.nextLine();
+MahasiswaBerprestasi list = new MahasiswaBerprestasi(jumMhs);
+Array dibuat dinamis sesuai jumlah yang diinputkan pengguna, bukan hardcoded 5
